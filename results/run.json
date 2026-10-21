@@ -1,0 +1,64 @@
+{
+  "years": [
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021
+  ],
+  "turbines": 6,
+  "lat": 52.4015,
+  "lon": -0.9431,
+  "ambient_ti": 0.1267,
+  "aep": {
+    "jensen": {
+      "gross_gwh": 34.916,
+      "net_gwh": 31.779,
+      "wake_loss_pct": 8.98
+    },
+    "gaussian": {
+      "gross_gwh": 34.916,
+      "net_gwh": 32.229,
+      "wake_loss_pct": 7.7
+    },
+    "turbopark": {
+      "gross_gwh": 34.916,
+      "net_gwh": 31.439,
+      "wake_loss_pct": 9.96
+    }
+  },
+  "validation": {
+    "records": 159289,
+    "days": 1913,
+    "period": [
+      "2016-05-03",
+      "2021-12-31"
+    ],
+    "measured_wake_loss_pct": 9.24,
+    "model_wake_loss_pct": {
+      "jensen": 11.44,
+      "gaussian": 9.69,
+      "turbopark": 12.13
+    },
+    "rmse_waked": {
+      "jensen": 0.1172,
+      "gaussian": 0.1063,
+      "turbopark": 0.1327
+    },
+    "best_direction_shift_deg": 2
+  },
+  "shadow": {
+    "worst_case_max_h": 1077.77,
+    "worst_case_max_min_per_day": 388.6,
+    "expected_max_h": 239.001,
+    "area_worst_gt_30h_km2": 2.385,
+    "area_worst_gt_30min_day_km2": 2.641,
+    "area_expected_gt_8h_km2": 2.043,
+    "area_any_flicker_km2": 3.728,
+    "max_distance_worst_gt_30h_m": 857.101,
+    "max_distance_expected_gt_8h_m": 857.101,
+    "expected_to_worst_ratio": 0.199,
+    "calendar_point_hours": 68.07
+  }
+}
