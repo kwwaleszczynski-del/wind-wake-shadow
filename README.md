@@ -1,38 +1,63 @@
-# Kelmarsh wind farm: wakes and shadow flicker
+# Kelmarsh wind farm: shadow flicker and wakes
 
 [![tests](https://github.com/kwwaleszczynski-del/wind-wake-shadow/actions/workflows/ci.yml/badge.svg)](https://github.com/kwwaleszczynski-del/wind-wake-shadow/actions/workflows/ci.yml)
 
-Wake flow maps, wake losses and shadow flicker maps for the six-turbine Kelmarsh wind farm (Senvion MM92, UK),
-built on the open SCADA dataset published by Cubico. Three engineering wake models are run on the real layout
-with PyWake and checked against six years of 10-minute SCADA; shadow flicker is mapped on a regular grid with an
-analytic sun-path model, as an astronomical worst case and as an expected case using measured sunshine, rotor
-operation and rotor orientation.
+Shadow flicker maps, wake flow maps and wake losses for the six-turbine Kelmarsh wind farm (Senvion MM92, UK),
+built on the open SCADA dataset published by Cubico. Shadow flicker is mapped on a regular grid with an analytic
+sun-path model, as an astronomical worst case and as an expected case using measured sunshine, rotor operation
+and rotor orientation. Three engineering wake models are run on the real layout with PyWake for flow maps and
+the annual wake loss, and checked against six years of 10-minute SCADA.
 
 **Interactive version:** [kwwaleszczynski-del.github.io/wind-wake-shadow](https://kwwaleszczynski-del.github.io/wind-wake-shadow/)
-(animated flow map, turbine-by-turbine model comparison, switchable flicker maps).
+(switchable flicker maps, animated flow map, turbine-by-turbine model comparison).
 
-![Gaussian wake model turning through all wind directions](docs/img/flow_animation.gif)
+![worst-case and expected flicker hours](docs/img/shadow_maps.png)
 
 ## Results at a glance
 
+- **Shadow flicker**: the astronomical worst case exceeds 30 h/year on 2.4 km² around the farm, up to 860 m from
+  the nearest turbine. Sunshine (23-43 % of daylight hours, Met Office Oxford), rotor operation (~90 % of
+  daylight time) and rotor orientation bring the expected hours down to **20 % of the worst case**; 2.0 km² still
+  sees more than 8 h/year in that expected case.
 - **Annual wake loss** over the measured wind climate: 7.7 % with the Niayifar & Porte-Agel Gaussian model,
   9.0 % with Jensen (k = 0.075) and 10.0 % with TurbOPark (gross AEP 34.9 GWh from nacelle wind speeds).
 - **Against SCADA** (159,289 ten-minute records with all six turbines in partial load, 2016-2021) the measured
-  wake loss in the sample is **9.2 %**. The Gaussian model gives 9.7 %, Jensen 11.4 %, TurbOPark 12.1 %. The
-  Gaussian model also has the smallest error in the waked direction bins (RMSE 0.106 of free-stream power, vs
-  0.117 Jensen and 0.133 TurbOPark).
+  wake loss in the sample is **9.2 %**, the Gaussian model gives 9.7 %, Jensen 11.4 %, TurbOPark 12.1 %. The
+  sector-by-sector comparison on the same records, with a GPU large-eddy simulation next to the three models, is
+  in [wind-les-gpu](https://github.com/kwwaleszczynski-del/wind-les-gpu).
 - **No single model gets every wake right.** At the closest spacing (2.9-3.3 rotor diameters) the measured
   single wakes are deeper and narrower than Jensen and Gaussian predict (power drops to 0.26-0.31 of free stream,
   Gaussian 0.38-0.45); TurbOPark matches them (0.28-0.31) but is too deep further downstream and far too deep in
   the T3-T5-T6 row (0.19 vs 0.46 measured for T6).
 - **The SCADA wind direction is well calibrated**: shifting the measured curves by -8 to +8 deg, the best match to
   the model is at +2 deg, one direction bin.
-- **Shadow flicker**: the astronomical worst case exceeds 30 h/year on 2.4 km² around the farm, up to 860 m from
-  the nearest turbine. Sunshine (23-43 % of daylight hours, Met Office Oxford), rotor operation (~90 % of
-  daylight time) and rotor orientation bring the expected hours down to **20 % of the worst case**; 2.0 km² still
-  sees more than 8 h/year in that expected case.
 
-## 1. Wake flow maps
+## 1. Shadow flicker
+
+Hours of flicker per year on a 10 m grid (3.2 x 3.2 km), with no buildings, terrain or screening: the maps above
+show where flicker is geometrically possible, not who would see it.
+
+| | value |
+|---|---:|
+| worst case, maximum on the grid (next to a tower) | 1,078 h/year, 389 min/day |
+| area above 30 h/year (worst case) | 2.4 km² |
+| area above 30 min on the worst day | 2.6 km² |
+| furthest point above 30 h/year from the nearest turbine | 860 m |
+| expected case / worst case, summed over the grid | 0.20 |
+| area above 8 h/year (expected case) | 2.0 km² |
+
+The 30 h/year, 30 min/day (worst case) and 8 h/year (expected case) values are the reference values of the
+German LAI guidance, the most widely used numeric limits; they are shown as reference lines only, not as a
+compliance assessment (values and their applicability to be verified for any real site).
+
+![flicker calendar at one grid point](docs/img/shadow_calendar.png)
+
+The calendar shows when flicker happens at one arbitrary grid point 1 km east of the farm: evening shadows of
+T4-T6 from late March to mid-September, 68 h/year in the worst case.
+
+## 2. Wake flow maps
+
+![Gaussian wake model turning through all wind directions](docs/img/flow_animation.gif)
 
 ![flow maps for four wind directions](docs/img/flow_maps.png)
 
@@ -46,7 +71,7 @@ The three models differ most in the far wake: Jensen's top-hat wake expands line
 the Gaussian wake recovers quickest at this site's turbulence (12.7 %), TurbOPark keeps a narrow, deep wake for
 kilometres.
 
-## 2. Wind climate, AEP and where the losses come from
+## 3. Wind climate, AEP and where the losses come from
 
 ![energy rose and wake loss per sector](docs/img/wake_loss_rose.png)
 
@@ -66,7 +91,7 @@ the T3-T5-T6 row) but carry little energy; the prevailing 240-250 deg sectors lo
 per-sector tables: [`results/aep_by_turbine.csv`](results/aep_by_turbine.csv),
 [`results/wake_loss_by_sector.csv`](results/wake_loss_by_sector.csv).
 
-## 3. Models against SCADA
+## 4. Models against SCADA
 
 The comparison asks one question per turbine and direction: how much power does the turbine produce relative to
 the turbines that are in free stream at the same time?
@@ -75,12 +100,10 @@ the turbines that are in free stream at the same time?
 
 ![all six turbines](docs/img/validation_turbines.png)
 
-| | wake loss in the sample | RMSE in waked bins |
-|---|---:|---:|
-| SCADA (measured) | 9.2 % | |
-| Jensen (k = 0.075) | 11.4 % | 0.117 |
-| Niayifar & Porte-Agel Gaussian | 9.7 % | 0.106 |
-| TurbOPark | 12.1 % | 0.133 |
+Sample wake loss and error in the waked direction bins per model are in
+[`results/validation_summary.csv`](results/validation_summary.csv) (RMSE of normalised power: Gaussian 0.106,
+Jensen 0.117, TurbOPark 0.133). [wind-les-gpu](https://github.com/kwwaleszczynski-del/wind-les-gpu) evaluates the
+same records through the same code path, sector by sector and with a large-eddy simulation added.
 
 Deepest normalised power of the downstream turbine within +-15 deg of full alignment (selection from
 [`results/pair_deficits.csv`](results/pair_deficits.csv)):
@@ -110,31 +133,6 @@ What the comparison shows:
   remove. They add the same error to every model.
 
 ![farm efficiency by direction](docs/img/farm_efficiency.png)
-
-## 4. Shadow flicker
-
-![worst-case and expected flicker hours](docs/img/shadow_maps.png)
-
-Hours of flicker per year on a 10 m grid (3.2 x 3.2 km), with no buildings, terrain or screening: the maps show
-where flicker is geometrically possible, not who would see it.
-
-| | value |
-|---|---:|
-| worst case, maximum on the grid (next to a tower) | 1,078 h/year, 389 min/day |
-| area above 30 h/year (worst case) | 2.4 km² |
-| area above 30 min on the worst day | 2.6 km² |
-| furthest point above 30 h/year from the nearest turbine | 860 m |
-| expected case / worst case, summed over the grid | 0.20 |
-| area above 8 h/year (expected case) | 2.0 km² |
-
-The 30 h/year, 30 min/day (worst case) and 8 h/year (expected case) values are the reference values of the
-German LAI guidance, the most widely used numeric limits; they are shown as reference lines only, not as a
-compliance assessment.
-
-![flicker calendar at one grid point](docs/img/shadow_calendar.png)
-
-The calendar shows when flicker happens at one arbitrary grid point 1 km east of the farm: evening shadows of
-T4-T6 from late March to mid-September, 68 h/year in the worst case.
 
 ## Method
 
