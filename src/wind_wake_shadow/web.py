@@ -99,8 +99,9 @@ def rose_figure(sectors: dict, labels: dict) -> go.Figure:
     polar = {"angularaxis": {"rotation": 90, "direction": "clockwise", "gridcolor": LIGHT["grid"],
                              "linecolor": LIGHT["axis"]},
              "radialaxis": {"gridcolor": LIGHT["grid"], "linecolor": LIGHT["axis"]}, "bgcolor": "rgba(0,0,0,0)"}
-    fig.update_layout(**_base_layout(height=430, polar=polar, polar2=polar, margin={"l": 40, "r": 40, "t": 60, "b": 30},
+    fig.update_layout(**_base_layout(height=430, polar=polar, polar2=polar, margin={"l": 40, "r": 40, "t": 80, "b": 30},
                                      legend={"orientation": "h", "y": -0.08}))
+    fig.update_annotations(yshift=24)  # subplot titles above the "0°" label of the angular axis
     return fig
 
 
@@ -285,6 +286,20 @@ function applyTheme() {
 }
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
 window.addEventListener('load', applyTheme);
+// on a phone: the two roses one above the other, the legends of the line charts below the plot
+function applyNarrow() {
+  if (window.innerWidth >= 600) return;
+  const rose = document.getElementById('rose');
+  if (rose && rose.layout) Plotly.relayout(rose, {height: 760, 'polar.domain': {x: [0, 1], y: [0.56, 1]},
+    'polar2.domain': {x: [0, 1], y: [0, 0.44]}, 'annotations[0].x': 0.5, 'annotations[1].x': 0.5,
+    'annotations[1].y': 0.44, 'legend.y': -0.04, 'legend.yanchor': 'top'});
+  ['validation', 'efficiency'].forEach(id => {
+    const d = document.getElementById(id);
+    if (d && d.layout) Plotly.relayout(d, {'legend.y': -0.32, 'legend.yanchor': 'top', 'legend.x': 0,
+      'margin.t': 30, 'margin.b': 160});
+  });
+}
+window.addEventListener('load', applyNarrow);
 """
 
 

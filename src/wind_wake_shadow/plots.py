@@ -97,6 +97,9 @@ def model_maps(maps: dict, labels: dict, xs, ys, wd_index: int, wd: float, farm,
         _wind_arrow(ax, wd, xs, ys)
         ax.set_title(labels[name], loc="left")
         _map_axes(ax)
+    for ax in axes[1:]:  # same extent in every panel: one y axis, so "north (m)" no longer runs into the panel before
+        ax.set_ylabel("")
+        ax.tick_params(labelleft=False)
     cb = fig.colorbar(im, ax=axes, shrink=0.85, pad=0.015)
     cb.set_label("wind speed / free stream")
     cb.outline.set_visible(False)
@@ -184,7 +187,7 @@ def validation_panels(measured: pd.DataFrame, curves: dict, labels: dict, farm, 
         ax.grid(True, axis="y")
         ax.set_xlim(0, 360)
         ax.set_xticks(np.arange(0, 361, 45))
-        ax.set_ylim(0.15, 1.2)
+        ax.set_ylim(0.15, 1.3)  # room for the highest SCADA points and their interval (T6: 1.275)
     for ax in axes[-1]:
         ax.set_xlabel("farm wind direction (deg)")
     for ax in axes[:, 0]:
@@ -215,7 +218,7 @@ def pair_profiles(measured: pd.DataFrame, curves: dict, labels: dict, farm, case
         ax.set_title(title, loc="left", fontsize=9)
         ax.set_xlabel("wind direction (deg)")
         ax.grid(True, axis="y")
-        ax.set_ylim(0.15, 1.1)
+        ax.set_ylim(0.15, 1.3)  # the SCADA points outside the wake reach above 1.2 (T6)
     np.atleast_1d(axes)[0].set_ylabel("power / free-stream power")
     handles, names = np.atleast_1d(axes)[0].get_legend_handles_labels()
     fig.legend(handles, names, loc="upper center", ncol=4, bbox_to_anchor=(0.5, 1.06))
@@ -233,7 +236,7 @@ def farm_efficiency(eff: pd.DataFrame, labels: dict, path: Path):
     ax.set_xlabel("farm wind direction (deg)")
     ax.set_ylabel("farm efficiency")
     ax.grid(True, axis="y")
-    ax.legend(ncol=4, loc="lower left")
+    ax.legend(ncol=4, loc="lower left", bbox_to_anchor=(0, 1.0))  # above the axes: TurbOPark's minima reached it
     _save(fig, path)
 
 
