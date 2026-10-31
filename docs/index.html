@@ -109,7 +109,7 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', app
 window.addEventListener('load', applyTheme);
 // on a phone: the two roses one above the other, the legends of the line charts below the plot
 function applyNarrow() {
-  if (window.innerWidth >= 600) return;
+  if (window.innerWidth >= 640) return;
   const rose = document.getElementById('rose');
   if (rose && rose.layout) Plotly.relayout(rose, {height: 760, 'polar.domain': {x: [0, 1], y: [0.56, 1]},
     'polar2.domain': {x: [0, 1], y: [0, 0.44]}, 'annotations[0].x': 0.5, 'annotations[1].x': 0.5,
@@ -119,6 +119,9 @@ function applyNarrow() {
     if (d && d.layout) Plotly.relayout(d, {'legend.y': -0.32, 'legend.yanchor': 'top', 'legend.x': 0,
       'margin.t': 30, 'margin.b': 160});
   });
+  const flow = document.getElementById('flow');  // the slider's value label ran into the Play/Pause buttons
+  if (flow && flow.layout) Plotly.relayout(flow, {'sliders[0].x': 0, 'sliders[0].len': 1, 'sliders[0].y': -0.24,
+    'margin.b': (flow.layout.margin.b || 120) + 50});
 }
 window.addEventListener('load', applyNarrow);
 </script>
